@@ -6,10 +6,9 @@ MessEase connects students and mess administrators on one shared, live platform:
 
 ## Login model
 
-- **Students** log in with just **name + roll number** — no password. The first time a roll number is used it creates that student's account; after that, the same roll number signs them back in. Roll numbers are unique in the database.
-- **Mess Admin** is a single fixed account (username + password set in `.env`, default `admin` / `messease2026`) — there's no admin sign-up, by design.
+- **Students** log in with just **name + roll number** — no password. 
+- **Mess Admin** is a single fixed account 
 
-⚠️ **Security note:** this is intentionally simple for a classroom/college project. Since student login has no password, anyone who knows (or guesses) a roll number can act as that student. Don't deploy this with real students' sensitive data on the open internet without adding real authentication first — see "What's still mock/simplified" below.
 
 ## How it answers "how does the mess manager know how many students are coming?"
 
@@ -27,8 +26,8 @@ Every student marks attendance per meal (breakfast/lunch/dinner) from their dash
 - Announcements feed
 
 **Admin Portal** (single fixed login)
-- Live today's headcount by meal (the core feature — see above)
-- Student directory (real registered students, not mock data)
+- Live today's headcount by meal 
+- Student directory (real registered students)
 - Manage weekly menu (add/remove items per day per meal — visible to students instantly)
 - Complaint triage (open → in-progress → resolved)
 - Bill all students at once for a month's mess fee; mark individual payments as paid
@@ -45,17 +44,54 @@ Every student marks attendance per meal (breakfast/lunch/dinner) from their dash
 - **Recharts** — charts/analytics
 - **Lucide React** — icons
 
+## Output: 
+
+## Login Page [Admin]
+
+![Login Page](images/Admin_Login.jpeg)
+
+## Login Page [Student]
+
+![Login Page](images/Student_Login.jpeg)
+
+## Dashboard
+
+![Dashboard](images/Admin_Dashboard.jpeg)
+
+## Announcement
+
+![Announcement](images/Admin_Announcement.jpeg)
+
+## Billing
+
+![Dashboard](images/Admin_Bill.jpeg)
+
+## Payment
+
+![Dashboard](images/Student_Pay.jpeg)
+
+## Students Complaints
+
+![Complaints](images/Student_Complain.jpeg)
+
+## Admin Complaints Resolve
+
+![Complaints](images/Admin_Complaint.jpeg)
+
+## Admin Analytics
+
+![Complaints](images/Admin_Analytics.jpeg)
+
 ## Setup
 
 ### 1. Create a Supabase project
 
-Go to [supabase.com](https://supabase.com), create a free account and a new project. Wait for it to finish provisioning (~2 minutes).
+Go to [supabase.com](https://supabase.com), create a free account and a new project. 
 
 ### 2. Run the database schema
 
 In your Supabase project dashboard, go to **SQL Editor → New query**, paste the entire contents of `supabase/schema.sql` from this repo, and click **Run**.
 
-This creates all tables (`profiles`, `menu_items`, `attendance`, `complaints`, `payments`, `announcements`), sets up row-level security policies, creates the `todays_attendance_summary` view, and seeds a starter menu for Monday/Tuesday.
 
 ### 3. Get your API keys
 
@@ -87,8 +123,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`. Pick **Student**, type any name + roll number to create your first student account. Pick **Mess Admin** and use the username/password from your `.env`. Open two browser tabs (one as a student, one as admin) to see attendance sync live.
-
+Open `http://localhost:5173`. 
 ## Project Structure
 
 ```
@@ -132,16 +167,12 @@ src/
 
 There's no Supabase Auth involved, so row-level security is intentionally open (any client can read/write) — access control is enforced in the app's UI/routing instead, not at the database layer. See the comment block at the top of `supabase/schema.sql` for the full reasoning and what to tighten if you ever go beyond a trusted classroom demo.
 
-## What's still mock/simplified (be ready to talk about this in an interview)
+## Future Enhancements: 
 
-- **No real authentication** — student login is name + roll number with no password, and admin is one fixed account. This is fine for a closed classroom demo but is the single biggest thing to call out as "next step" — e.g. add Supabase Auth with magic links or college SSO, and move the admin check server-side.
-- **RLS is wide open** — since there's no `auth.uid()` to key policies off, every table currently allows any client to read/write. Good talking point: "I'd add Supabase Auth + tighten RLS to scope each student to their own rows before this touches real data."
+- **No real authentication** — student login is name + roll number with no password, and admin is one fixed account.
+- **RLS is wide open** — since there's no `auth.uid()` to key policies off, every table currently allows any client to read/write. So we can add Supabase Auth + tighten RLS to scope each student to their own rows before this touches real data."
 - **Payments are tracked, not processed** — "Pay Now" / billing doesn't move real money. Wiring up Razorpay or Stripe Checkout is the natural next step.
 - **No push notifications** — announcements just live in the database; a service worker + Web Push (or Supabase's realtime channel, which is already used for attendance) could notify students live.
 - **Wallet balance is just a number on the profile** — there's no transaction ledger yet. Useful enhancement: a `wallet_transactions` table for an auditable history.
 
-These are good, honest things to mention if asked "what would you add next" in an interview — it shows you understand the gap between a working demo and a production system.
 
-## License
-
-MIT — free to use and modify for your own project/college assignment.
